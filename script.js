@@ -1,6 +1,7 @@
 
 import {
     supabase,
+    getCachedSettings,
     getSiteSettings
 } from './site-settings.js';
 
@@ -22,17 +23,21 @@ function setText(selector, value) {
 }
 
 function setBrandName(name) {
-    if (!name) return;
+    const brandName = name || 'رِواق';
 
     document.querySelectorAll('[data-site-name]').forEach(element => {
-        element.textContent = name;
+        // عدم تكرار الاسم أو النقطة عند تحديث الإعدادات
+        element.replaceChildren();
 
+        const text = document.createTextNode(brandName);
         const dot = document.createElement('span');
+
         dot.textContent = '.';
-        element.appendChild(dot);
+
+        element.append(text, dot);
     });
 
-    setText('[data-footer-brand]', name);
+    setText('[data-footer-brand]', brandName);
 }
 
 function setImage(selector, url, alt = '') {
@@ -89,6 +94,7 @@ function applyGeneralSettings(settings) {
     document.title =
         `${name} | ${siteSettings.siteTagline || 'تجربة تستحقها'}`;
 
+    // عرض اللوجو لو موجود
     if (siteSettings.logoUrl) {
         document.querySelectorAll('[data-site-name]').forEach(element => {
             const image = document.createElement('img');
@@ -103,6 +109,7 @@ function applyGeneralSettings(settings) {
         });
     }
 
+    // ألوان الهوية
     const root = document.documentElement;
 
     if (siteSettings.primaryColor) {
@@ -127,14 +134,25 @@ function applyGeneralSettings(settings) {
 // =====================================
 
 async function loadGeneralSettings() {
+
+    // أولًا: قراءة الكاش وعرض الاسم فورًا
+    const cachedSettings = getCachedSettings();
+
+    applyGeneralSettings(cachedSettings);
+
+    // إظهار الاسم فورًا وعدم انتظار Supabase
+    document.documentElement.classList.remove('settings-loading');
+
+    // ثانيًا: جلب أحدث إعدادات من السيرفر
     try {
-        const settings = await getSiteSettings();
-        applyGeneralSettings(settings);
+        const latestSettings = await getSiteSettings();
+
+        if (latestSettings && Object.keys(latestSettings).length) {
+            applyGeneralSettings(latestSettings);
+        }
+
     } catch (error) {
         console.error('General settings error:', error);
-    } finally {
-        // إظهار الاسم بعد التأكد من الإعدادات
-        document.documentElement.classList.remove('settings-loading');
     }
 }
 
@@ -156,7 +174,10 @@ menuBtn?.addEventListener('click', () => {
 nav?.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
         nav.classList.remove('open');
-        menuBtn.innerHTML = '<i class="fa-solid fa-bars"></i>';
+
+        if (menuBtn) {
+            menuBtn.innerHTML = '<i class="fa-solid fa-bars"></i>';
+        }
     });
 });
 
@@ -208,6 +229,7 @@ async function loadProduct() {
     }
 
     setImage('[data-product-main-image]', data.main_image, data.name);
+
     setImage('[data-product-secondary-image]', data.main_image, data.name);
 
     const mobileOrder = $('[data-mobile-order]');
@@ -245,7 +267,7 @@ function renderGallery(product) {
 
     if (!images.length) return;
 
-    container.innerHTML = images.map((url, index) => `
+    container.innerHTML = images.map(url => `
         <img
             src="${escapeHTML(url)}"
             alt="${escapeHTML(product.name || 'صورة المنتج')}"
@@ -463,6 +485,7 @@ orderForm?.addEventListener('submit', async event => {
             'تعذر تسجيل الطلب حاليًا. حاول مرة أخرى.';
 
         submitButton.disabled = false;
+
         submitButton.innerHTML =
             'تأكيد الطلب <i class="fa-solid fa-arrow-left"></i>';
 
@@ -497,9 +520,11 @@ orderForm?.addEventListener('submit', async event => {
     }
 
     orderForm.reset();
+
     $('#quantity').value = 1;
 
     submitButton.disabled = false;
+
     submitButton.innerHTML =
         'تأكيد الطلب <i class="fa-solid fa-arrow-left"></i>';
 });
@@ -511,9 +536,12 @@ orderForm?.addEventListener('submit', async event => {
 async function initializeSite() {
     $('#currentYear').textContent = new Date().getFullYear();
 
-    await loadGeneralSettings();
+    // عرض الاسم والإعدادات المحلية فورًا
+    const settingsPromise = loadGeneralSettings();
 
+    // تحميل بقية محتويات الموقع
     await Promise.all([
+        settingsPromise,
         loadProduct(),
         loadSections(),
         loadReviews(),
