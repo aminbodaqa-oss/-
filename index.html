@@ -4,21 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="رِواق | تجربة تستحقها">
     <title>رِواق | تجربة تستحقها</title>
 
     <link rel="stylesheet" href="style.css">
-
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 
 <body>
 
-<!-- HEADER -->
 <header class="header">
     <div class="container header-inner">
-        <a href="#" class="logo">رِواق<span>.</span></a>
+        <a href="#" class="logo" data-site-name>رِواق<span>.</span></a>
 
         <nav class="nav" id="nav">
             <a href="#home">الرئيسية</a>
@@ -29,33 +27,31 @@
 
         <a href="#order" class="header-btn">اطلب الآن</a>
 
-        <button class="menu-btn" id="menuBtn">
+        <button class="menu-btn" id="menuBtn" type="button" aria-label="القائمة">
             <i class="fa-solid fa-bars"></i>
         </button>
     </div>
 </header>
 
-<!-- HERO -->
 <section class="hero" id="home">
     <div class="container hero-grid">
-
         <div class="hero-content">
-            <span class="tag">اختيار رِواق المميز</span>
+            <span class="tag" data-hero-badge>اختيار رِواق المميز</span>
 
-            <h1>
+            <h1 data-hero-title>
                 اكتشف الفرق<br>
                 <span>في كل تفصيلة.</span>
             </h1>
 
-            <p>
+            <p data-hero-description>
                 منتج يجمع بين الجودة والأناقة والتصميم العملي.
                 تجربة مختلفة تستحق أن تكون جزءاً من يومك.
             </p>
 
             <div class="price">
-                <strong>999 ج.م</strong>
-                <del>1,299 ج.م</del>
-                <span>خصم 23%</span>
+                <strong data-product-price>999 ج.م</strong>
+                <del data-product-old-price>1,299 ج.م</del>
+                <span data-product-discount>خصم 23%</span>
             </div>
 
             <div class="hero-buttons">
@@ -72,14 +68,12 @@
         </div>
 
         <div class="hero-image">
-            <img src="assets/product-main.jpg" alt="صورة المنتج">
+            <img src="assets/product-main.jpg" alt="صورة المنتج" data-product-main-image>
             <div class="image-label">RIWAQ COLLECTION</div>
         </div>
-
     </div>
 </section>
 
-<!-- BENEFITS -->
 <section class="benefits">
     <div class="container benefits-grid">
         <div><i class="fa-solid fa-gem"></i><span>جودة مميزة</span></div>
@@ -88,7 +82,6 @@
     </div>
 </section>
 
-<!-- GALLERY -->
 <section class="section" id="gallery">
     <div class="container">
         <div class="section-title">
@@ -97,7 +90,7 @@
             <p>كل تفصيلة تستحق أن تراها.</p>
         </div>
 
-        <div class="gallery">
+        <div class="gallery" data-product-gallery>
             <img src="assets/product-main.jpg" alt="المنتج">
             <img src="assets/product-2.jpg" alt="تفاصيل المنتج">
             <img src="assets/product-3.jpg" alt="زاوية أخرى للمنتج">
@@ -105,7 +98,6 @@
     </div>
 </section>
 
-<!-- FEATURES -->
 <section class="section features" id="features">
     <div class="container">
         <div class="section-title">
@@ -135,19 +127,19 @@
     </div>
 </section>
 
-<!-- DETAILS -->
 <section class="section details" id="details">
     <div class="container details-grid">
         <div>
             <span class="section-kicker">تفاصيل المنتج</span>
             <h2>لأن التفاصيل<br><span>تصنع الفرق.</span></h2>
-            <p>
+
+            <p data-product-description>
                 هنا تكتب وصف المنتج بشكل تفصيلي،
                 وتوضح طريقة استخدامه ومميزاته والخامات
                 والمواصفات التي يحتاج العميل معرفتها.
             </p>
 
-            <ul>
+            <ul data-product-points>
                 <li><i class="fa-solid fa-check"></i> خامات عالية الجودة</li>
                 <li><i class="fa-solid fa-check"></i> تصميم عملي وأنيق</li>
                 <li><i class="fa-solid fa-check"></i> تفاصيل مدروسة</li>
@@ -158,12 +150,11 @@
         </div>
 
         <div class="details-image">
-            <img src="assets/product-2.jpg" alt="تفاصيل المنتج">
+            <img src="assets/product-2.jpg" alt="تفاصيل المنتج" data-product-secondary-image>
         </div>
     </div>
 </section>
 
-<!-- REVIEWS -->
 <section class="section reviews" id="reviews">
     <div class="container">
         <div class="section-title">
@@ -171,57 +162,42 @@
             <h2>تجارب تستحق المشاركة</h2>
         </div>
 
-        <div class="reviews-grid">
+        <div class="reviews-grid" data-reviews-container>
             <div class="review-card">
                 <div class="stars">★★★★★</div>
                 <p>مساحة لإضافة تجربة عميل حقيقية بعد الشراء.</p>
-                <strong>اسم العميل</strong>
-            </div>
-
-            <div class="review-card">
-                <div class="stars">★★★★★</div>
-                <p>مساحة لإضافة تقييم موثق عن المنتج.</p>
-                <strong>اسم العميل</strong>
-            </div>
-
-            <div class="review-card">
-                <div class="stars">★★★★★</div>
-                <p>مساحة لإضافة رأي عميل آخر.</p>
                 <strong>اسم العميل</strong>
             </div>
         </div>
     </div>
 </section>
 
-<!-- FAQ -->
-<section class="section">
+<section class="section" id="faq">
     <div class="container faq-container">
         <div class="section-title">
             <span>مساعدة</span>
             <h2>الأسئلة الشائعة</h2>
         </div>
 
-        <details>
-            <summary>كيف أطلب المنتج؟</summary>
-            <p>املأ نموذج الطلب الموجود بالأسفل ببياناتك.</p>
-        </details>
-
-        <details>
-            <summary>ما مدة التوصيل؟</summary>
-            <p>يتم توضيح مدة التوصيل عند تأكيد الطلب.</p>
-        </details>
-
-        <details>
-            <summary>هل يوجد استبدال واسترجاع؟</summary>
-            <p>تطبق سياسة الاستبدال والاسترجاع المعلنة للمتجر.</p>
-        </details>
+        <div data-faq-container>
+            <details>
+                <summary>كيف أطلب المنتج؟</summary>
+                <p>املأ نموذج الطلب الموجود بالأسفل ببياناتك.</p>
+            </details>
+            <details>
+                <summary>ما مدة التوصيل؟</summary>
+                <p>يتم توضيح مدة التوصيل عند تأكيد الطلب.</p>
+            </details>
+            <details>
+                <summary>هل يوجد استبدال واسترجاع؟</summary>
+                <p>تطبق سياسة الاستبدال والاسترجاع المعلنة للمتجر.</p>
+            </details>
+        </div>
     </div>
 </section>
 
-<!-- ORDER -->
 <section class="section order-section" id="order">
     <div class="container order-grid">
-
         <div class="order-info">
             <span class="section-kicker">خطوتك التالية</span>
             <h2>اطلب منتجك<br><span>بكل سهولة.</span></h2>
@@ -229,10 +205,10 @@
 
             <div class="order-product">
                 <div>
-                    <strong>اسم المنتج</strong>
+                    <strong data-order-product-name>اسم المنتج</strong>
                     <span>الكمية والسعر النهائي يؤكدان معك</span>
                 </div>
-                <strong>999 ج.م</strong>
+                <strong data-order-product-price>999 ج.م</strong>
             </div>
         </div>
 
@@ -240,38 +216,36 @@
             <h3>بيانات الطلب</h3>
 
             <label for="name">الاسم بالكامل</label>
-            <input id="name" name="name" type="text" placeholder="اكتب اسمك" required>
+            <input id="name" name="name" type="text" placeholder="اكتب اسمك" required maxlength="120">
 
             <label for="phone">رقم الهاتف</label>
-            <input id="phone" name="phone" type="tel" placeholder="01xxxxxxxxx" required>
+            <input id="phone" name="phone" type="tel" placeholder="01xxxxxxxxx" required maxlength="20">
 
             <label for="address">العنوان بالتفصيل</label>
-            <textarea id="address" name="address" placeholder="المحافظة والمنطقة والشارع..." required></textarea>
+            <textarea id="address" name="address" placeholder="المحافظة والمنطقة والشارع..." required maxlength="1000"></textarea>
 
             <label for="quantity">الكمية</label>
             <input id="quantity" name="quantity" type="number" min="1" max="20" value="1" required>
 
-            <button type="submit" class="primary-btn">
+            <button type="submit" class="primary-btn" id="submitOrder">
                 تأكيد الطلب <i class="fa-solid fa-arrow-left"></i>
             </button>
 
             <p id="formMessage" aria-live="polite"></p>
         </form>
-
     </div>
 </section>
 
-<!-- FOOTER -->
 <footer class="footer">
     <div class="container footer-inner">
-        <a href="#" class="logo">رِواق<span>.</span></a>
-        <p>اختيارات بعناية، وتجربة تستحقها.</p>
-        <small>© 2026 رِواق - جميع الحقوق محفوظة</small>
+        <a href="#" class="logo" data-site-name>رِواق<span>.</span></a>
+        <p data-footer-text>اختيارات بعناية، وتجربة تستحقها.</p>
+        <small>© <span id="currentYear">2026</span> <span data-footer-brand>رِواق</span> - جميع الحقوق محفوظة</small>
     </div>
 </footer>
 
-<a href="#order" class="mobile-order">اطلب الآن — 999 ج.م</a>
+<a href="#order" class="mobile-order" data-mobile-order>اطلب الآن — 999 ج.م</a>
 
-<script src="script.js"></script>
+<script type="module" src="script.js"></script>
 </body>
 </html>
