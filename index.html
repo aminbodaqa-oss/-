@@ -1,14 +1,22 @@
 
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" class="settings-loading">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="رِواق | تجربة تستحقها">
     <title>رِواق | تجربة تستحقها</title>
 
+    <style>
+        html.settings-loading [data-site-name] {
+            visibility: hidden;
+        }
+    </style>
+
     <link rel="stylesheet" href="style.css">
+
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 
@@ -35,6 +43,7 @@
 
 <section class="hero" id="home">
     <div class="container hero-grid">
+
         <div class="hero-content">
             <span class="tag" data-hero-badge>اختيار رِواق المميز</span>
 
@@ -58,6 +67,7 @@
                 <a href="#order" class="primary-btn">
                     اطلب الآن <i class="fa-solid fa-arrow-left"></i>
                 </a>
+
                 <a href="#details" class="secondary-btn">اكتشف التفاصيل</a>
             </div>
 
@@ -71,6 +81,7 @@
             <img src="assets/product-main.jpg" alt="صورة المنتج" data-product-main-image>
             <div class="image-label">RIWAQ COLLECTION</div>
         </div>
+
     </div>
 </section>
 
@@ -131,6 +142,7 @@
     <div class="container details-grid">
         <div>
             <span class="section-kicker">تفاصيل المنتج</span>
+
             <h2>لأن التفاصيل<br><span>تصنع الفرق.</span></h2>
 
             <p data-product-description>
@@ -184,10 +196,12 @@
                 <summary>كيف أطلب المنتج؟</summary>
                 <p>املأ نموذج الطلب الموجود بالأسفل ببياناتك.</p>
             </details>
+
             <details>
                 <summary>ما مدة التوصيل؟</summary>
                 <p>يتم توضيح مدة التوصيل عند تأكيد الطلب.</p>
             </details>
+
             <details>
                 <summary>هل يوجد استبدال واسترجاع؟</summary>
                 <p>تطبق سياسة الاستبدال والاسترجاع المعلنة للمتجر.</p>
@@ -198,9 +212,12 @@
 
 <section class="section order-section" id="order">
     <div class="container order-grid">
+
         <div class="order-info">
             <span class="section-kicker">خطوتك التالية</span>
+
             <h2>اطلب منتجك<br><span>بكل سهولة.</span></h2>
+
             <p>املأ بياناتك وسنتواصل معك لتأكيد الطلب.</p>
 
             <div class="order-product">
@@ -208,6 +225,7 @@
                     <strong data-order-product-name>اسم المنتج</strong>
                     <span>الكمية والسعر النهائي يؤكدان معك</span>
                 </div>
+
                 <strong data-order-product-price>999 ج.م</strong>
             </div>
         </div>
@@ -233,19 +251,29 @@
 
             <p id="formMessage" aria-live="polite"></p>
         </form>
+
     </div>
 </section>
 
 <footer class="footer">
     <div class="container footer-inner">
         <a href="#" class="logo" data-site-name>رِواق<span>.</span></a>
+
         <p data-footer-text>اختيارات بعناية، وتجربة تستحقها.</p>
-        <small>© <span id="currentYear">2026</span> <span data-footer-brand>رِواق</span> - جميع الحقوق محفوظة</small>
+
+        <small>
+            © <span id="currentYear">2026</span>
+            <span data-footer-brand>رِواق</span>
+            - جميع الحقوق محفوظة
+        </small>
     </div>
 </footer>
 
-<a href="#order" class="mobile-order" data-mobile-order>اطلب الآن — 999 ج.م</a>
+<a href="#order" class="mobile-order" data-mobile-order>
+    اطلب الآن — 999 ج.م
+</a>
 
 <script type="module" src="script.js"></script>
+
 </body>
 </html>
