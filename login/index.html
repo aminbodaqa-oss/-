@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#263746">
+  <title>تسجيل الدخول | رِواق</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <main class="login-wrapper">
+    <section class="login-card">
+
+      <a href="../" class="brand">
+        <span class="brand-mark">ر</span>
+        <span>رِواق</span>
+      </a>
+
+      <div class="login-heading">
+        <span class="eyebrow">لوحة الإدارة</span>
+        <h1>مرحبًا بعودتك</h1>
+        <p>سجّل الدخول للوصول إلى لوحة التحكم الخاصة بك.</p>
+      </div>
+
+      <form id="loginForm">
+
+        <div class="form-group">
+          <label for="email">البريد الإلكتروني</label>
+          <input
+            type="email"
+            id="email"
+            placeholder="name@example.com"
+            autocomplete="username"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="password">كلمة المرور</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="أدخل كلمة المرور"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <div id="message" class="message" role="status"></div>
+
+        <button type="submit" id="loginButton">
+          تسجيل الدخول
+        </button>
+
+      </form>
+
+      <a href="../" class="back-link">العودة إلى المتجر</a>
+
+    </section>
+
+    <footer>© رِواق - جميع الحقوق محفوظة</footer>
+  </main>
+
+  <script type="module" src="./login.js"></script>
+</body>
+</html>
