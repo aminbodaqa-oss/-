@@ -7,6 +7,18 @@ export const supabase = createClient(
     'sb_publishable_46DkcsH57_lCiZxV3zga7g_GDOtzfzF'
 );
 
+const CACHE_KEY = 'riwaq_general_settings';
+
+export function getCachedSettings() {
+    try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        return cached ? JSON.parse(cached) : {};
+    } catch (error) {
+        console.warn('تعذر قراءة الإعدادات المحفوظة محليًا:', error);
+        return {};
+    }
+}
+
 export async function getSiteSettings() {
     const { data, error } = await supabase
         .from('site_settings')
@@ -15,9 +27,17 @@ export async function getSiteSettings() {
         .maybeSingle();
 
     if (error) {
-        console.error('Settings error:', error);
-        return {};
+        console.error('Settings loading error:', error);
+        return getCachedSettings();
     }
 
-    return data?.setting_value || {};
+    const settings = data?.setting_value || {};
+
+    try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(settings));
+    } catch (cacheError) {
+        console.warn('تعذر حفظ نسخة الإعدادات محليًا:', cacheError);
+    }
+
+    return settings;
 }
