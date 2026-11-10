@@ -1,36 +1,17 @@
 
-import { supabase, getSiteSettings } from './site-settings.js';
+import {
+    supabase,
+    getSiteSettings
+} from './site-settings.js';
 
-const $ = (selector) => document.querySelector(selector);
+const $ = selector => document.querySelector(selector);
 
 let currentProduct = null;
 let siteSettings = {};
 
-// ================================
-// MOBILE MENU
-// ================================
-
-const menuBtn = $('#menuBtn');
-const nav = $('#nav');
-
-menuBtn?.addEventListener('click', () => {
-    nav.classList.toggle('open');
-
-    menuBtn.innerHTML = nav.classList.contains('open')
-        ? '<i class="fa-solid fa-xmark"></i>'
-        : '<i class="fa-solid fa-bars"></i>';
-});
-
-nav?.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-        nav.classList.remove('open');
-        menuBtn.innerHTML = '<i class="fa-solid fa-bars"></i>';
-    });
-});
-
-// ================================
-// SAFE HELPERS
-// ================================
+// =====================================
+// GENERAL HELPERS
+// =====================================
 
 function setText(selector, value) {
     if (value === undefined || value === null || value === '') return;
@@ -38,6 +19,20 @@ function setText(selector, value) {
     document.querySelectorAll(selector).forEach(element => {
         element.textContent = value;
     });
+}
+
+function setBrandName(name) {
+    if (!name) return;
+
+    document.querySelectorAll('[data-site-name]').forEach(element => {
+        element.textContent = name;
+
+        const dot = document.createElement('span');
+        dot.textContent = '.';
+        element.appendChild(dot);
+    });
+
+    setText('[data-footer-brand]', name);
 }
 
 function setImage(selector, url, alt = '') {
@@ -57,13 +52,15 @@ function formatPrice(value) {
     return `${number.toLocaleString('ar-EG')} ج.م`;
 }
 
-function safeDiscount(oldPrice, price) {
+function calculateDiscount(oldPrice, price) {
     const oldValue = Number(oldPrice);
     const newValue = Number(price);
 
-    if (!oldValue || oldValue <= newValue) return '';
+    if (!oldValue || oldValue <= newValue) return 0;
 
-    return Math.round(((oldValue - newValue) / oldValue) * 100);
+    return Math.round(
+        ((oldValue - newValue) / oldValue) * 100
+    );
 }
 
 function escapeHTML(value = '') {
@@ -76,61 +73,96 @@ function escapeHTML(value = '') {
     })[char]);
 }
 
-// ================================
-// GENERAL SITE SETTINGS
-// ================================
+// =====================================
+// APPLY GENERAL SETTINGS
+// =====================================
 
-async function loadGeneralSettings() {
-    siteSettings = await getSiteSettings();
+function applyGeneralSettings(settings) {
+    siteSettings = settings || {};
 
-    const settings = siteSettings;
+    const name = siteSettings.siteName || 'رِواق';
 
-    setText('[data-site-name]', settings.siteName || 'رِواق');
-    setText('[data-site-tagline]', settings.siteTagline);
-    setText('[data-site-description]', settings.siteDescription);
-    setText('[data-footer-text]', settings.footerText);
+    setBrandName(name);
 
-    setText('[data-footer-brand]', settings.siteName || 'رِواق');
+    setText('[data-footer-text]', siteSettings.footerText);
 
-    if (settings.siteName) {
-        document.title = `${settings.siteName} | ${settings.siteTagline || 'تجربة تستحقها'}`;
-    }
+    document.title =
+        `${name} | ${siteSettings.siteTagline || 'تجربة تستحقها'}`;
 
-    if (settings.logoUrl) {
+    if (siteSettings.logoUrl) {
         document.querySelectorAll('[data-site-name]').forEach(element => {
-            element.innerHTML = '';
             const image = document.createElement('img');
-            image.src = settings.logoUrl;
-            image.alt = settings.siteName || 'رِواق';
+
+            image.src = siteSettings.logoUrl;
+            image.alt = name;
             image.style.maxHeight = '48px';
             image.style.maxWidth = '160px';
             image.style.objectFit = 'contain';
-            element.appendChild(image);
+
+            element.replaceChildren(image);
         });
     }
 
     const root = document.documentElement;
 
-    if (settings.primaryColor) {
-        root.style.setProperty('--navy', settings.primaryColor);
+    if (siteSettings.primaryColor) {
+        root.style.setProperty('--navy', siteSettings.primaryColor);
     }
 
-    if (settings.accentColor) {
-        root.style.setProperty('--copper', settings.accentColor);
+    if (siteSettings.accentColor) {
+        root.style.setProperty('--copper', siteSettings.accentColor);
     }
 
-    if (settings.sandColor) {
-        root.style.setProperty('--sand', settings.sandColor);
+    if (siteSettings.sandColor) {
+        root.style.setProperty('--sand', siteSettings.sandColor);
     }
 
-    if (settings.creamColor) {
-        root.style.setProperty('--cream', settings.creamColor);
+    if (siteSettings.creamColor) {
+        root.style.setProperty('--cream', siteSettings.creamColor);
     }
 }
 
-// ================================
+// =====================================
+// LOAD SETTINGS
+// =====================================
+
+async function loadGeneralSettings() {
+    try {
+        const settings = await getSiteSettings();
+        applyGeneralSettings(settings);
+    } catch (error) {
+        console.error('General settings error:', error);
+    } finally {
+        // إظهار الاسم بعد التأكد من الإعدادات
+        document.documentElement.classList.remove('settings-loading');
+    }
+}
+
+// =====================================
+// MOBILE MENU
+// =====================================
+
+const menuBtn = $('#menuBtn');
+const nav = $('#nav');
+
+menuBtn?.addEventListener('click', () => {
+    nav.classList.toggle('open');
+
+    menuBtn.innerHTML = nav.classList.contains('open')
+        ? '<i class="fa-solid fa-xmark"></i>'
+        : '<i class="fa-solid fa-bars"></i>';
+});
+
+nav?.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+        nav.classList.remove('open');
+        menuBtn.innerHTML = '<i class="fa-solid fa-bars"></i>';
+    });
+});
+
+// =====================================
 // PRODUCT
-// ================================
+// =====================================
 
 async function loadProduct() {
     const { data, error } = await supabase
@@ -153,21 +185,27 @@ async function loadProduct() {
     currentProduct = data;
 
     setText('[data-product-price]', formatPrice(data.price));
-    setText('[data-product-old-price]', data.old_price ? formatPrice(data.old_price) : '');
+
+    setText(
+        '[data-product-old-price]',
+        data.old_price ? formatPrice(data.old_price) : ''
+    );
 
     setText('[data-order-product-name]', data.name);
     setText('[data-order-product-price]', formatPrice(data.price));
 
-    const discount = safeDiscount(data.old_price, data.price);
+    setText('[data-product-description]', data.description);
 
+    const discount = calculateDiscount(data.old_price, data.price);
     const discountElement = $('[data-product-discount]');
 
     if (discountElement) {
-        discountElement.textContent = discount ? `خصم ${discount}%` : '';
+        discountElement.textContent = discount
+            ? `خصم ${discount}%`
+            : '';
+
         discountElement.hidden = !discount;
     }
-
-    setText('[data-product-description]', data.description);
 
     setImage('[data-product-main-image]', data.main_image, data.name);
     setImage('[data-product-secondary-image]', data.main_image, data.name);
@@ -175,7 +213,8 @@ async function loadProduct() {
     const mobileOrder = $('[data-mobile-order]');
 
     if (mobileOrder) {
-        mobileOrder.textContent = `اطلب الآن — ${formatPrice(data.price)}`;
+        mobileOrder.textContent =
+            `اطلب الآن — ${formatPrice(data.price)}`;
     }
 
     renderGallery(data);
@@ -183,9 +222,10 @@ async function loadProduct() {
 
 function renderGallery(product) {
     const container = $('[data-product-gallery]');
+
     if (!container) return;
 
-    let images = [];
+    const images = [];
 
     if (product.main_image) {
         images.push(product.main_image);
@@ -193,12 +233,17 @@ function renderGallery(product) {
 
     if (Array.isArray(product.gallery)) {
         product.gallery.forEach(item => {
-            const url = typeof item === 'string' ? item : item?.url;
-            if (url && !images.includes(url)) images.push(url);
+            const url = typeof item === 'string'
+                ? item
+                : item?.url;
+
+            if (url && !images.includes(url)) {
+                images.push(url);
+            }
         });
     }
 
-    if (images.length === 0) return;
+    if (!images.length) return;
 
     container.innerHTML = images.map((url, index) => `
         <img
@@ -209,9 +254,9 @@ function renderGallery(product) {
     `).join('');
 }
 
-// ================================
+// =====================================
 // SECTIONS
-// ================================
+// =====================================
 
 async function loadSections() {
     const { data, error } = await supabase
@@ -227,67 +272,69 @@ async function loadSections() {
 
     if (!data) return;
 
+    const sectionMap = {
+        hero: {
+            title: '[data-hero-title]',
+            subtitle: '[data-hero-description]',
+            badge: '[data-hero-badge]'
+        },
+        features: {
+            title: '#features .section-title h2',
+            subtitle: '#features .section-title p'
+        },
+        gallery: {
+            title: '#gallery .section-title h2',
+            subtitle: '#gallery .section-title p'
+        },
+        details: {
+            title: '#details h2',
+            subtitle: '[data-product-description]'
+        },
+        reviews: {
+            title: '#reviews .section-title h2',
+            subtitle: '#reviews .section-title p'
+        },
+        faq: {
+            title: '#faq .section-title h2',
+            subtitle: '#faq .section-title p'
+        }
+    };
+
     data.forEach(section => {
+        const selectors = sectionMap[section.section_key];
         const content = section.content || {};
-        const key = section.section_key;
 
-        const sectionMap = {
-            hero: {
-                title: '[data-hero-title]',
-                subtitle: '[data-hero-description]',
-                badge: '[data-hero-badge]'
-            },
-            features: {
-                title: '#features .section-title h2',
-                subtitle: '#features .section-title p'
-            },
-            gallery: {
-                title: '#gallery .section-title h2',
-                subtitle: '#gallery .section-title p'
-            },
-            details: {
-                title: '#details h2',
-                subtitle: '#details [data-product-description]'
-            },
-            reviews: {
-                title: '#reviews .section-title h2',
-                subtitle: '#reviews .section-title p'
-            },
-            faq: {
-                title: '#faq .section-title h2',
-                subtitle: '#faq .section-title p'
-            }
-        };
+        if (!selectors) return;
 
-        const selectors = sectionMap[key];
+        if (section.title && selectors.title) {
+            const element = $(selectors.title);
 
-        if (selectors) {
-            if (section.title && selectors.title) {
-                const element = $(selectors.title);
-                if (element) element.textContent = section.title;
-            }
-
-            if (section.subtitle && selectors.subtitle) {
-                const element = $(selectors.subtitle);
-                if (element) element.textContent = section.subtitle;
-            }
-
-            if (content.badge && selectors.badge) {
-                setText(selectors.badge, content.badge);
+            if (element) {
+                element.textContent = section.title;
             }
         }
 
-        // إخفاء القسم إذا كانت بياناته موجودة لكن لا نعرف له عنصرًا مطابقًا
-        // لا يتم حذف أي قسم تلقائيًا من تصميم الصفحة.
+        if (section.subtitle && selectors.subtitle) {
+            const element = $(selectors.subtitle);
+
+            if (element) {
+                element.textContent = section.subtitle;
+            }
+        }
+
+        if (content.badge && selectors.badge) {
+            setText(selectors.badge, content.badge);
+        }
     });
 }
 
-// ================================
+// =====================================
 // REVIEWS
-// ================================
+// =====================================
 
 async function loadReviews() {
     const container = $('[data-reviews-container]');
+
     if (!container) return;
 
     const { data, error } = await supabase
@@ -304,24 +351,34 @@ async function loadReviews() {
     if (!data?.length) return;
 
     container.innerHTML = data.map(review => {
-        const rating = Math.min(5, Math.max(0, Number(review.rating) || 5));
+        const rating = Math.min(
+            5,
+            Math.max(0, Number(review.rating) || 5)
+        );
 
         return `
             <article class="review-card">
-                <div class="stars">${'★'.repeat(rating)}${'☆'.repeat(5 - rating)}</div>
+                <div class="stars">
+                    ${'★'.repeat(rating)}${'☆'.repeat(5 - rating)}
+                </div>
+
                 <p>${escapeHTML(review.review_text || '')}</p>
-                <strong>${escapeHTML(review.customer_name || 'عميل')}</strong>
+
+                <strong>
+                    ${escapeHTML(review.customer_name || 'عميل')}
+                </strong>
             </article>
         `;
     }).join('');
 }
 
-// ================================
+// =====================================
 // FAQ
-// ================================
+// =====================================
 
 async function loadFaqs() {
     const container = $('[data-faq-container]');
+
     if (!container) return;
 
     const { data, error } = await supabase
@@ -345,9 +402,9 @@ async function loadFaqs() {
     `).join('');
 }
 
-// ================================
-// ORDER SUBMISSION
-// ================================
+// =====================================
+// ORDER FORM
+// =====================================
 
 const orderForm = $('#orderForm');
 const formMessage = $('#formMessage');
@@ -359,7 +416,8 @@ orderForm?.addEventListener('submit', async event => {
     if (!orderForm.reportValidity()) return;
 
     if (!currentProduct) {
-        formMessage.textContent = 'المنتج غير متاح حاليًا. حاول مرة أخرى لاحقًا.';
+        formMessage.textContent =
+            'المنتج غير متاح حاليًا. حاول مرة أخرى لاحقًا.';
         return;
     }
 
@@ -368,8 +426,16 @@ orderForm?.addEventListener('submit', async event => {
     const address = $('#address').value.trim();
     const quantity = Number($('#quantity').value);
 
-    if (!name || !phone || !address || !Number.isInteger(quantity) || quantity < 1 || quantity > 20) {
-        formMessage.textContent = 'راجع البيانات المدخلة وحاول مرة أخرى.';
+    if (
+        !name ||
+        !phone ||
+        !address ||
+        !Number.isInteger(quantity) ||
+        quantity < 1 ||
+        quantity > 20
+    ) {
+        formMessage.textContent =
+            'راجع البيانات المدخلة وحاول مرة أخرى.';
         return;
     }
 
@@ -392,17 +458,25 @@ orderForm?.addEventListener('submit', async event => {
 
     if (error) {
         console.error('Order submission error:', error);
-        formMessage.textContent = 'تعذر تسجيل الطلب حاليًا. حاول مرة أخرى.';
+
+        formMessage.textContent =
+            'تعذر تسجيل الطلب حاليًا. حاول مرة أخرى.';
+
         submitButton.disabled = false;
-        submitButton.innerHTML = 'تأكيد الطلب <i class="fa-solid fa-arrow-left"></i>';
+        submitButton.innerHTML =
+            'تأكيد الطلب <i class="fa-solid fa-arrow-left"></i>';
+
         return;
     }
 
-    formMessage.textContent = 'تم استلام طلبك بنجاح! سنتواصل معك لتأكيده.';
+    formMessage.textContent =
+        'تم استلام طلبك بنجاح! سنتواصل معك لتأكيده.';
+
     formMessage.style.color = 'green';
 
-    // واتساب اختياري بعد تسجيل الطلب بنجاح
-    const whatsappNumber = String(siteSettings.whatsappNumber || '').replace(/\D/g, '');
+    const whatsappNumber = String(
+        siteSettings.whatsappNumber || ''
+    ).replace(/\D/g, '');
 
     if (/^\d{10,15}$/.test(whatsappNumber)) {
         const message = `
@@ -426,12 +500,13 @@ orderForm?.addEventListener('submit', async event => {
     $('#quantity').value = 1;
 
     submitButton.disabled = false;
-    submitButton.innerHTML = 'تأكيد الطلب <i class="fa-solid fa-arrow-left"></i>';
+    submitButton.innerHTML =
+        'تأكيد الطلب <i class="fa-solid fa-arrow-left"></i>';
 });
 
-// ================================
+// =====================================
 // INITIALIZE
-// ================================
+// =====================================
 
 async function initializeSite() {
     $('#currentYear').textContent = new Date().getFullYear();
