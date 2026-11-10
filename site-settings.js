@@ -9,16 +9,38 @@ export const supabase = createClient(
 
 const CACHE_KEY = 'riwaq_general_settings';
 
+// قراءة الإعدادات المحلية فورًا بدون انتظار الإنترنت
 export function getCachedSettings() {
     try {
         const cached = localStorage.getItem(CACHE_KEY);
-        return cached ? JSON.parse(cached) : {};
+
+        if (!cached) return {};
+
+        const settings = JSON.parse(cached);
+
+        return settings && typeof settings === 'object'
+            ? settings
+            : {};
+
     } catch (error) {
-        console.warn('تعذر قراءة الإعدادات المحفوظة محليًا:', error);
+        console.warn('تعذر قراءة الإعدادات المحلية:', error);
         return {};
     }
 }
 
+// حفظ الإعدادات محليًا
+export function saveCachedSettings(settings) {
+    try {
+        localStorage.setItem(
+            CACHE_KEY,
+            JSON.stringify(settings || {})
+        );
+    } catch (error) {
+        console.warn('تعذر حفظ الإعدادات المحلية:', error);
+    }
+}
+
+// جلب أحدث إعدادات من Supabase
 export async function getSiteSettings() {
     const { data, error } = await supabase
         .from('site_settings')
@@ -31,13 +53,14 @@ export async function getSiteSettings() {
         return getCachedSettings();
     }
 
-    const settings = data?.setting_value || {};
-
-    try {
-        localStorage.setItem(CACHE_KEY, JSON.stringify(settings));
-    } catch (cacheError) {
-        console.warn('تعذر حفظ نسخة الإعدادات محليًا:', cacheError);
+    // لو لم توجد بيانات على السيرفر نستخدم الكاش
+    if (!data || !data.setting_value) {
+        return getCachedSettings();
     }
+
+    const settings = data.setting_value;
+
+    saveCachedSettings(settings);
 
     return settings;
 }
